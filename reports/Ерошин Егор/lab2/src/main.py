@@ -37,11 +37,11 @@ class LinearBinaryClassifier:
                 output = np.dot(xi, self.w)
                 error = target - output
 
+
                 self.w += alpha * error * xi
 
-                Es += error ** 2
-
-            Es /= len(y)
+            # Суммируем ошибку после завершения эпохи
+            Es = np.mean((y - np.dot(Xb, self.w)) ** 2)
             history.append(Es)
 
             if Es <= Ee:
@@ -64,14 +64,13 @@ class LinearBinaryClassifier:
                 error = target - output
 
 
-                alpha = 1.0 / (1.0 + np.dot(xi, xi))
+                alpha = 1.0 / np.dot(xi, xi)
 
 
                 self.w += alpha * error * xi
 
-                Es += error ** 2
 
-            Es /= len(y)
+            Es = np.mean((y - np.dot(Xb, self.w)) ** 2)
             history.append(Es)
 
             if Es <= Ee:
