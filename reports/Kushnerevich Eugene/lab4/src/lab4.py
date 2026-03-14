@@ -5,7 +5,8 @@ from itertools import product
 n = 6  
 
 def logic_func(row):
-    return int(not all(x == 1 for x in row))
+    x = list(row)
+    return int((1 - x[0]) * x[1] * x[2] * x[3] * x[4] * x[5])
 
 all_inputs = np.array(list(product([0, 1], repeat = n)))
 all_outputs = np.array([logic_func(row) for row in all_inputs]).reshape(-1, 1)
@@ -15,8 +16,8 @@ print(f"{'Входы':<20} {'Выход'}")
 for row, out in zip(all_inputs, all_outputs):
     print(f"  {row.astype(int)}  ->  {int(out[0])}")
 
-ones_idx  = np.where(all_outputs[:, 0] == 0)[0]
-zeros_idx = np.where(all_outputs[:, 0] == 1)[0]
+ones_idx  = np.where(all_outputs[:, 0] == 1)[0]
+zeros_idx = np.where(all_outputs[:, 0] == 0)[0]
 
 np.random.seed(42)
 zeros_perm = np.random.permutation(zeros_idx)
@@ -162,7 +163,7 @@ for xi, ti in zip(X_test, y_test):
     prob = sigmoid(s)
     pred = 1 if prob >= 0.5 else 0
     ok   = "Yay" if pred == int(ti[0]) else "X"
-    print(f"  {xi.astype(int)} → ŷ={prob:.6f} -> класс {pred} (эталон {int(ti[0])}) {ok}")
+    print(f"  {xi.astype(int)} -> ŷ={prob:.6f} -> класс {pred} (эталон {int(ti[0])}) {ok}")
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
