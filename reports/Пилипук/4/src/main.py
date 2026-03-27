@@ -24,7 +24,7 @@ def MSE(e, y):
 def sigmoid(y):
     return 1.0 / (1.0 + np.exp(-y))
 
-def trainMSE(X, e, alpha, adaptive=False, epochs=5000, tol=1e-7):
+def trainMSE(X, e, alpha, adaptive=False, epochs=10000, tol=1e-5):
     n_samples, n_features = X.shape
     weights = np.zeros((n_features, 1))
     T = 0.0
@@ -33,19 +33,23 @@ def trainMSE(X, e, alpha, adaptive=False, epochs=5000, tol=1e-7):
     current_alpha = alpha
 
     for epoch in range(epochs):
-        y = predict(weights, X, T)
-        error = MSE(e, y)
+        y = X @ weights - T
+        a = sigmoid(y) 
+    
+        error = np.mean((a - e) ** 2)
         errors.append(error)
 
         if len(errors) > 1 and abs(errors[-2] - errors[-1]) < tol:
-            print(f"MSE minimized at epoch = {epoch}")
+            print(f"MSE minimized at epoch = {epoch}") 
             break
         
-        grad_w = (X.T @ (y - e)) / n_samples
-        grad_T = np.mean(y - e)
+        delta = (a - e) * (a * (1 - a)) 
+
+        grad_w = (X.T @ delta) / n_samples
+        grad_T = np.mean(delta)
 
         weights -= current_alpha * grad_w
-        T += current_alpha * grad_T
+        T += current_alpha * grad_T 
 
         if adaptive: 
             current_alpha = alpha / (1 + 0.001 * epoch)
@@ -74,4 +78,5 @@ print(f"Final T (Adapt): {T_adapt}")
 
 for i in range(len(X_test)):
     y = sigmoid(predict(weights_fixed, X_test[i], T_fixed))
-    print(f"Ahmmf... Im thinking that this is 1 with {y}%. Actually this is - {e_test[i]}")
+    num = 1 if y >= 0.5 else 0
+    print(f"Ahmmf... Im thinking that this is {num} with {y}%. Actually this is - {e_test[i]}")
